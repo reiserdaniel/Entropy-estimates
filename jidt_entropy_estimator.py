@@ -2,7 +2,7 @@ from jpype import *
 import os
 
 def init_jvm():
-    jarLocation = os.path.join(os.getcwd(), "..", "jidt.jar")
+    jarLocation = os.path.join(os.getcwd(),  "infodynamics.jar")
     if not(os.path.isfile(jarLocation)):
         exit("JIDT.jar not found (expected at "
              + os.path.abspath(jarLocation) + ") - are you running from demos/python?")
@@ -10,17 +10,22 @@ def init_jvm():
     startJVM(getDefaultJVMPath(), "-ea", "-Djava.class.path=" + jarLocation)
 
 
-def entropy_calculator(TimeSeries, numDimension, type):
-    TimeSeriesJava = JArray(JDouble, 2)(TimeSeries)
+def entropy_calculator(time_series, num_dimension, type, kernel_width=0.25):
+    TimeSeriesJava = JArray(JDouble, 2)(time_series)
     if type is "gaussian":
         teCalcClass = JPackage("infodynamics.measures.continuous.gaussian").EntropyCalculatorMultiVariateGaussian
+        teCalc = teCalcClass()
+        teCalc.initialise(num_dimension)
     elif type is "kernel":
         teCalcClass = JPackage("infodynamics.measures.continuous.kernel").EntropyCalculatorMultiVariateKernel
+        teCalc = teCalcClass()
+        teCalc.setProperty("NORMALISE", "true")
+        teCalc.initialise(num_dimension, kernel_width)
     elif type is "kozachenko":
         teCalcClass = JPackage("infodynamics.measures.continuous.kozachenko").EntropyCalculatorMultiVariateKozachenko
-    #elif type is "kraskov":
-    #   teCalcClass = JPackage("infodynamics.measures.continuous.kraskov").EntropyCalculatorMultiVariateKraskov
-    teCalc = teCalcClass()
-    teCalc.initialise(numDimension)
+        teCalc = teCalcClass()
+        teCalc.initialise(num_dimension)
+
+    teCalc.initialise(num_dimension)
     teCalc.setObservations(TimeSeriesJava)
     return teCalc.computeAverageLocalOfObservations()

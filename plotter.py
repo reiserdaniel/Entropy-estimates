@@ -70,9 +70,9 @@ def boxplotter(measures, names, title, truth=0):
     pos = np.array(range(len(measures))) + 1
     bp = ax.boxplot(measures, sym='k+', positions=pos,
                     notch=1, bootstrap=5000)
-    ax.set_title(title, fontsize=10)
-    ax.set_xticklabels(names, rotation=45, fontsize=8)
-    ax.set_ylabel('estimated entropy [nan]', fontsize=9)
+    ax.set_title(title, fontsize=11)
+    ax.set_xticklabels(names, fontsize=12)
+    ax.set_ylabel('estimated entropy [nan]', fontsize=12)
     plt.setp(bp['whiskers'], color='k', linestyle='-')
     plt.setp(bp['fliers'], markersize=3.0)
     if truth is not 0:
